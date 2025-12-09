@@ -57,6 +57,7 @@ void Lds::ResetLidar(LidarDevice *lidar, uint8_t data_src) {
   //cache_index_.ResetIndex(lidar);
   DeInitQueue(&lidar->data);
   lidar->imu_data.Clear();
+  lidar->livox_config.publish_imu_data = true;
 
   lidar->data_src = data_src;
   lidar->connect_state = kConnectStateOff;
@@ -113,6 +114,9 @@ void Lds::StorageImuData(ImuData* imu_data) {
   }
 
   LidarDevice *p_lidar = &lidars_[index];
+  if (!p_lidar->livox_config.publish_imu_data) {
+    return;
+  }
   LidarImuDataQueue* imu_queue = &p_lidar->imu_data;
   imu_queue->Push(imu_data);
   if (!imu_queue->Empty()) {

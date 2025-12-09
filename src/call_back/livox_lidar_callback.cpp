@@ -104,7 +104,15 @@ void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,
 
   std::cout << "begin to change work mode to 'Normal', handle: " << handle << std::endl;
   SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
-  EnableLivoxLidarImuData(handle, LivoxLidarCallback::EnableLivoxLidarImuDataCallback, lds_lidar);
+  bool publish_imu = true;
+  if (lidar_device) {
+    publish_imu = lidar_device->livox_config.publish_imu_data;
+  }
+  if (publish_imu) {
+    EnableLivoxLidarImuData(handle, LivoxLidarCallback::EnableLivoxLidarImuDataCallback, lds_lidar);
+  } else {
+    std::cout << "IMU publishing disabled for handle: " << handle << std::endl;
+  }
   return;
 }
 
